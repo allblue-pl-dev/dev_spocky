@@ -1,0 +1,6 @@
+[submodule "node_modules/ab-fs-watcher"]
+	path = node_modules/ab-fs-watcher
+	url = https://github.com/allblue-pl/node_ab-fs-watcher
+[submodule "node_modules/js-libs"]
+	path = node_modules/js-libs
+	url = https://github.com/allblue-pl/js_js-libs
