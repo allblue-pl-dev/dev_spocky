@@ -1,0 +1,133 @@
+<html>
+<head>
+    <script type="text/javascript" src="node_modules/js-libs/js/js-libs.js"></script>
+    {{jsLibs_Header}}
+    <script type="text/javascript" src="js/spocky.js"></script>
+    <!-- {{spocky_Header}} -->
+</head>
+<body>
+    <div>
+        <button id="a">AAA</button>
+        <button id="b">BBB</button>
+        <button id="c">CCC</button>
+        <button id="d">DDD</button>
+    </div>
+    <br />
+    <div id="content"></div>
+    <script>
+        const nodes = spocky._lib.nodes;
+
+        /* Root Node */
+        let root = new nodes.RootNode(document.getElementById('content'));
+
+        /* Show 1 */
+        let show1 = new nodes.ShowNode();
+        show1.show = true;
+        root.children.add(show1);
+
+        /* Show 2 */
+        let show2 = new nodes.ShowNode();
+        show2.show = true;
+        show1.children.add(show2);
+
+        /* Test 1 */
+        let test1 = new nodes.SingleNode('h1');
+        test1.children.add(new nodes.TextNode('Test 1 H1'));
+
+        show2.children.add(test1);
+        /* / Test 1 */
+
+        /* Test 2 */
+        let test2 = new nodes.SingleNode('h3');
+        test2.children.add(new nodes.TextNode('Test 2 H3'));
+
+        // root.children.add(test2);
+        show1.children.add(test2);
+        /* / Test 2 */
+
+        /* / Show 1 */
+        /* / Show 2 */
+
+        /* Repeat 1 */
+        let repeat1 = new nodes.RepeatNode();
+        root.children.add(repeat1);
+
+        let test3 = new nodes.TextNode('Test 3 Text');
+        repeat1.children.add(test3);
+        /* / Repeat 1 */
+
+        root.activate();
+
+        // test1.node.setContent('Bla bla');
+        //
+        // test2.node.setContent('Glu glu');
+        // test2.node.setRepeatCount(5);
+        //
+        // // test1.setShow(true);
+        // // test1.setRepeatCount(10);
+        // // test1.getRepeatNode(3);
+        // // test1.removeRepeatNode(0);
+
+        // test_1.hide();
+
+        // spocky.layout('site.Site', () => [
+        //     { h1: [
+        //         { $text: [{
+        //             _text: 'Hello World',
+        //         }]},
+        //     ]},
+        //     { h2: [
+        //         {
+        //             _show: 'testField',
+        //             _hide: 'testField',
+        //         },
+        //
+        //         { $text: [{
+        //             _text: 'Smaller world.'
+        //         }]},
+        //         { small: [
+        //             { $text: [{
+        //                 _text: 'Super small world.'
+        //             }]}
+        //         ]}
+        //     ]}
+        // ]);
+        //
+        // spocky.package('site', ($spk, $pkg) => {
+        //     $pkg.module('Site', ($this) => {
+        //         $this.view = $spk.layout($this.name);
+        //     }, class {
+        //
+        //     });
+        //
+        // });
+        //
+        // // spocky.config(($config) => { $config
+        // //     .page('home', '')
+        // // });
+        //
+        // window.addEventListener('load', () => {
+        //     spocky.init();
+        // });
+
+
+        document.getElementById('a').addEventListener('click', (evt) => {
+            show1.show = !show1.show;
+            evt.target.innerHTML = show1.show;
+        });
+        document.getElementById('b').addEventListener('click', (evt) => {
+            show2.show = !show2.show;
+            evt.target.innerHTML = show2.show;
+        });
+        document.getElementById('c').addEventListener('click', (evt) => {
+            repeat1.push();
+        });
+        document.getElementById('d').addEventListener('click', (evt) => {
+            repeat1.pop();
+        });
+        repeat1.push();
+        repeat1.push();
+        repeat1.push();
+    </script>
+</body>
+</html>

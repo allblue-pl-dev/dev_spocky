@@ -23,16 +23,16 @@ function get_header(file_paths)
 
 function build() {
     jsLibs.build('spocky', path.join(__dirname, 'js-lib'),
-            path.join(__dirname, '/js-lib_test'), (err, file_paths) => {
+            path.join(__dirname, '/build/js-lib_web'), (err, file_paths) => {
         if (err !== null)
             throw err;
 
-        fs.readFile(path.join(__dirname, 'test.dev.html'), 'utf-8', (err, data) => {
+        fs.readFile(path.join(__dirname, 'test.html'), 'utf-8', (err, data) => {
             if (err !== null)
                 throw err;
 
-            let replaced_data = data.replace(/\{\{jsLibs_header\}\}/g, get_header(file_paths));
-            fs.writeFile(path.join(__dirname, 'test.html'), replaced_data, 'utf-8',
+            let replaced_data = data.replace(/\{\{jsLibs_Header\}\}/g, get_header(file_paths));
+            fs.writeFile(path.join(__dirname, '_test.html'), replaced_data, 'utf-8',
                     (err) => {
                 if (err !== null)
                     throw err;
@@ -47,6 +47,9 @@ function build() {
 }
 
 abLog.log('Watching...');
-abFSWatcher.watch('./js-lib/**/*.js', () => {
+abFSWatcher.watch([
+    './js-lib/**/*.js',
+    './test.html',
+        ], [ 'add', 'change', 'unlink' ], () => {
     build();
 });

@@ -1,4 +1,4 @@
-'use strict';
+jsLibs.exportModule('spocky', 'index', (require, module) => { 'use strict';
 
 const Config = require('./Config');
 
@@ -61,3 +61,4 @@ class Spocky
 }
 
 module.exports = new Spocky();
+ });

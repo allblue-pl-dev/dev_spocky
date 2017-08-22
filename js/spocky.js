@@ -1,4 +1,4 @@
 'use strict';
 
 
-const spocky = abLibs.require('spocky');
+const spocky = jsLibs.require('spocky');
