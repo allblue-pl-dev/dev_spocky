@@ -1,108 +1,197 @@
 'use strict';
 
 
-class ABTypes
+const abTypes = new class abTypes
 {
 
-    get AssertionError()
-    { let self = this;
-        return ABTypes_AssertionError
-    }
-
-    get TypeError()
-    { let self = this;
-        return ABTypes_TypeError;
-    }
-
-    get Interface()
-    { let self = this;
-        return require('./Interface');
+    get Presets() {
+        return require('./Presets');
     }
 
 
     constructor()
-    { let self = this;
+    {
 
     }
 
     args(args)
-    { let self = this;
+    {
+        for (let i = 0; i < args.length; i++) {
+            if (i + 1 >= arguments.length)
+                return;
+
+            this.var(args[i], arguments[i + 1]);
+        }
+    }
+
+    argsC(args, errors = [])
+    {
         for (let i = 0; i < args.length; i++)
-            self.var(args[i], arguments[i + 1]);
+            if (!this.varC(args[i], arguments[i + 1]))
+                return false;
+
+        return true;
     }
 
     assert(value, message = '')
-    { let self = this;
+    {
         if (!value)
             throw new ABTypes_AssertionError(message);
     }
 
-    implements(object, interface_object)
-    { let self = this;
-        let not_implemented_methods = [];
-        if (!interface_object.validate(object, not_implemented_methods)) {
-            throw new self.TypeError('Interface methods not implemented:' +
-                    not_implemented_methods.join(', '));
+    implements(object, prop_class)
+    {
+        if (!this.implementsC(object, prop_class)) {
+            throw new TypeError(`Object of type \`${object.constructor.name}\`` +
+                    ` doesn't implement property.`);
         }
+    }
+
+    implementsC(object, prop_class)
+    {
+        this.args(arguments, 'object', 'function');
+
+        if (prop_class.PropName in object) {
+            if (object[prop_class.PropName] instanceof prop_class)
+                return true;
+        }
+
+        return false;
+    }
+
+    prop(main_object, prop_class)
+    {
+        this.args(arguments, 'object', 'function');
+
+        if (!('Property' in prop_class))
+            throw new Error(`\`prop_class\` is not a \`Property\`.`);
+
+        let prop_args = [ null ];
+        for (let i = 2; i < arguments.length; i++)
+            prop_args.push(arguments[i]);
+
+        let prop = new (Function.prototype.bind.apply(prop_class, prop_args))();
+        Object.defineProperty(main_object, prop_class.Property, {
+            value: prop
+        });
     }
 
     var(value, value_type)
-    { let self = this;
-        /* Basic types. */
-        if (typeof value_type === 'string') {
-            if (typeof value !== value_type)
-                throw new self.TypeError('Wrong variable type.');
-
+    {
+        let errors = [];
+        if (this.varC(value, value_type, errors))
             return;
+
+        console.error('Error:', errors);
+        throw new TypeError('Wrong variable type.');
+    }
+
+    varC(value, value_type, errors = [])
+    {
+        if (value === null)
+            return true;
+
+        let typeof_value_type = typeof value_type;
+
+        /* Basic types. */
+        if (typeof_value_type === 'string') {
+            if (typeof value !== value_type) {
+                let real_value_type = typeof value;
+
+                errors.push(`Variable \`${value}\` of type \`${real_value_type}\` should be` +
+                        ` of type \`${value_type}\`.`);
+                return false;
+            }
+
+            return true;
         }
 
-        /* Classes */
-        if (typeof value_type === 'object') {
-            if (value_type instanceof self.Interface) {
-                let not_implemented_methods = [];
-                if (!value_type.validate(value, not_implemented_methods)) {
-                    throw new self.TypeError('Interface methods not implemented:' +
-                            not_implemented_methods.join(', '));
+        if (typeof_value_type === 'object') {
+            /* Multiple Types */
+            if (value_type instanceof Array) {
+                for (let i = 0; i < value_type.length; i++)
+                    this.var(value, value_type[i], errors);
+
+                if (errors.length > 0)
+                    return false;
+            }
+
+            return true;
+        }
+
+        if (typeof_value_type === 'function') {
+            /* Property */
+            if ('PropName' in value_type) {
+                if (!this.implementsC(value, value_type)) {
+
+                    errors.push(`Variable does not implement property
+                            \`${value_type.constructor}\`.`);
+                    return false;
                 }
 
-                return;
+                return true;
             }
+
+            /* Class */
+            if (!(value instanceof value_type)) {
+                errors.push(`Variable \`${value}\` is not  an instance of` +
+                        ` \`${value_type.name}\`.`);
+                return false;
+            }
+
+            return true;
         }
 
-        if (typeof value_type === 'function') {
-            if (!(value instanceof value_type))
-                throw new self.TypeError('Wrong class type.');
+        throw new Error(`Unknown \`value_type\`: ${typeof_value_type}`);
+    }
+
+    virtual(object = null)
+    {
+        if (object === null)
+            throw new ABTypes_NotImplementedError();
+
+        throw new NotImplementedError(`Method not implemented in:` +
+                ` \`${object.main.constructor.name}\`.`);
+    }
+
+}();
+module.exports = abTypes;
+
+
+Object.defineProperties(abTypes, {
+
+    AssertionError: { value:
+    class ABTypes_AssertionError extends Error
+    {
+        constructor(...args)
+        {
+            super(...args);
         }
-    }
+
+    }},
 
 
-    _validateInterface(object, interface_object)
-    { let self = this;
-
-    }
-
-}
-
-
-class ABTypes_AssertionError extends Error
-{
-
-    constructor(...args)
+    NotImplementedError: { value:
+    class ABTypes_NotImplementedError extends Error
     {
-        super(...args);
-    }
 
-}
+        constructor(...args)
+        {
+            super(...args);
+        }
+
+    }},
 
 
-class ABTypes_TypeError extends Error
-{
-
-    constructor(...args)
+    TypeError: { value:
+    class ABTypes_TypeError extends Error
     {
-        super(...args);
-    }
 
-}
+        constructor(...args)
+        {
+            super(...args);
+        }
 
-module.exports = new ABTypes();
+    }},
+
+});

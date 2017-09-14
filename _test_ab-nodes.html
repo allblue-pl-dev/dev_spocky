@@ -1,0 +1,117 @@
+<html>
+<head>
+    <script type="text/javascript" src="node_modules/js-libs/js/js-libs.js"></script>
+    <script type="text/javascript" src="build/js-lib_web/ModuleInfo.js"></script><script type="text/javascript" src="build/js-lib_web/PModule.js"></script><script type="text/javascript" src="build/js-lib_web/Config.js"></script><script type="text/javascript" src="build/js-lib_web/Layout.js"></script><script type="text/javascript" src="build/js-lib_web/Element.js"></script><script type="text/javascript" src="build/js-lib_web/Uri.js"></script><script type="text/javascript" src="build/js-lib_web/index.js"></script><script type="text/javascript" src="build/js-lib_web/Viewable.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/HtmlElement.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/Node.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/ParentNode.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/index.js"></script><script type="text/javascript" src="build/js-lib_web/ab-layouts/LayoutNode.js"></script><script type="text/javascript" src="build/js-lib_web/instances/AppInstance.js"></script><script type="text/javascript" src="build/js-lib_web/ab-layouts/ElementNode.js"></script><script type="text/javascript" src="build/js-lib_web/instances/ConfigInstance.js"></script><script type="text/javascript" src="build/js-lib_web/instances/ModuleInstance.js"></script><script type="text/javascript" src="build/js-lib_web/instances/PackageInstance.js"></script><script type="text/javascript" src="build/js-lib_web/ab-types/Interface.js"></script><script type="text/javascript" src="build/js-lib_web/ab-types/Types.js"></script><script type="text/javascript" src="build/js-lib_web/ab-types/index.js"></script><script type="text/javascript" src="build/js-lib_web/tests/Layout.js"></script><script type="text/javascript" src="build/js-lib_web/ab-types/Info.js"></script><script type="text/javascript" src="build/js-lib_web/module/MultiView.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/nodes/RootNode.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/nodes/FieldNode.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/nodes/RepeatNode.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/nodes/ShowNode.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/nodes/TextNode.js"></script><script type="text/javascript" src="build/js-lib_web/ab-nodes/nodes/SingleNode.js"></script>
+    <script type="text/javascript" src="js/spocky.js"></script>
+    <!-- {{spocky_Header}} -->
+</head>
+<body>
+    <div>
+        <button id="a">AAA</button>
+        <button id="b">BBB</button>
+        <button id="c">CCC</button>
+        <button id="d">DDD</button>
+    </div>
+    <br />
+    <div id="content"></div>
+    <script>
+        const nodes = spocky.nodes;
+        const Layout = spocky.Layout;
+
+
+        let layout = new Layout({
+            $root: [{ _id: 'root', _element: document.getElementById('content') },
+                { h1: [{ _id: 'test1' },
+                    { $text: [{
+                        _id: 'test2',
+                        _text: 'Hello World',
+                    }]},
+                ]},
+
+                { h2: [{ _id: 'test3' },
+                    { $text: [{
+                        _id: 'test4',
+                        _text: 'Hello Underworld',
+                    }]},
+                ]},
+
+                { ul: [ {},
+                    { $repeat: [{ _id: 'repeat' },
+                        { li: [
+                            { $text: [{ _text: 'Text:' }]},
+                        ]},
+                        { li: [
+                            { $text: [{ _text: 'Sth else.' }]},
+                        ]},
+                    ]},
+                ]},
+            ],
+        });
+
+        let root_node = layout.getNodeById('root');
+        let repeat_node = layout.getNodeById('repeat');
+
+
+        root_node.activate();
+
+        // spocky.layout('site.Site', () => [
+        //     { h1: [
+        //         { $text: [{
+        //             _text: 'Hello World',
+        //         }]},
+        //     ]},
+        //     { h2: [
+        //         {
+        //             _show: 'testField',
+        //             _hide: 'testField',
+        //         },
+        //
+        //         { $text: [{
+        //             _text: 'Smaller world.'
+        //         }]},
+        //         { small: [
+        //             { $text: [{
+        //                 _text: 'Super small world.'
+        //             }]}
+        //         ]}
+        //     ]}
+        // ]);
+        //
+        // spocky.package('site', ($spk, $pkg) => {
+        //     $pkg.module('Site', ($this) => {
+        //         $this.view = $spk.layout($this.name);
+        //     }, class {
+        //
+        //     });
+        //
+        // });
+        //
+        // // spocky.config(($config) => { $config
+        // //     .page('home', '')
+        // // });
+        //
+        // window.addEventListener('load', () => {
+        //     spocky.init();
+        // });
+
+
+        // document.getElementById('a').addEventListener('click', (evt) => {
+        //     show1.show = !show1.show;
+        //     evt.target.innerHTML = show1.show;
+        // });
+        // document.getElementById('b').addEventListener('click', (evt) => {
+        //     show2.show = !show2.show;
+        //     evt.target.innerHTML = show2.show;
+        // });
+        document.getElementById('c').addEventListener('click', (evt) => {
+            repeat_node.push();
+        });
+        document.getElementById('d').addEventListener('click', (evt) => {
+            repeat_node.pop();
+        });
+        repeat_node.push();
+        repeat_node.push();
+        repeat_node.push();
+    </script>
+</body>
+</html>

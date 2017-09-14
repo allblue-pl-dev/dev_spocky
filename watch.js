@@ -8,6 +8,9 @@ const abFSWatcher = require('ab-fs-watcher');
 const jsLibs = require('js-libs');
 
 
+let file_name = process.argv[2] + '.html';
+
+
 function get_header(file_paths)
 {
     let header = '';
@@ -27,12 +30,12 @@ function build() {
         if (err !== null)
             throw err;
 
-        fs.readFile(path.join(__dirname, 'test.html'), 'utf-8', (err, data) => {
+        fs.readFile(path.join(__dirname, file_name), 'utf-8', (err, data) => {
             if (err !== null)
                 throw err;
 
             let replaced_data = data.replace(/\{\{jsLibs_Header\}\}/g, get_header(file_paths));
-            fs.writeFile(path.join(__dirname, '_test.html'), replaced_data, 'utf-8',
+            fs.writeFile(path.join(__dirname, `_${file_name}`), replaced_data, 'utf-8',
                     (err) => {
                 if (err !== null)
                     throw err;
@@ -49,7 +52,7 @@ function build() {
 abLog.log('Watching...');
 abFSWatcher.watch([
     './js-lib/**/*.js',
-    './test.html',
+    `./${file_name}`,
         ], [ 'add', 'change', 'unlink' ], () => {
     build();
 });
